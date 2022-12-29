@@ -1,25 +1,12 @@
 import React from "react";
-const filteredItems = [
-  {
-    id: 1,
-    title: "Item 1",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    completed: false,
-  },
-];
+import { useSelector } from "react-redux";
+
 const TodoList = () => {
+  const items = useSelector(state => state.todos.items);
+  console.log(items);
   return (
     <ul className="todo-list">
-      {filteredItems.map(item => (
+      {items.map(item => (
         <li className={item.completed ? "completed" : "view"} key={item.id}>
           <div className="view">
             <input type="checkbox" className="toggle" />

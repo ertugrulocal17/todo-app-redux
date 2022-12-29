@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 
 const TodoList = () => {
   const items = useSelector(state => state.todos.items);
-  console.log(items);
   return (
     <ul className="todo-list">
       {items.map(item => (

@@ -9,7 +9,11 @@ export const todosSlice = createSlice({
       { id: 3, title: "Learn Redux Toolkit", completed: false },
     ],
   },
-  reducers: {},
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+  },
 });
-
+export const { addTodo } = todosSlice.actions;
 export default todosSlice.reducer;

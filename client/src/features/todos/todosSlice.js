@@ -16,6 +16,25 @@ export const addTodoAsync = createAsyncThunk(
     return res.data;
   }
 );
+export const toggleTodoAsync = createAsyncThunk(
+  "todos/toggleTodoAsync",
+  async ({ id, data }) => {
+    const res = await axios.patch(
+      `${process.env.REACT_APP_API_BASE_ENDPOINT}/todos/${id}`,
+      data
+    );
+    return res.data;
+  }
+);
+export const removeTodoAsync = createAsyncThunk(
+  "todos/removeTodoAsync",
+  async id => {
+    await axios.delete(
+      `${process.env.REACT_APP_API_BASE_ENDPOINT}/todos/${id}`
+    );
+    return id;
+  }
+);
 export const todosSlice = createSlice({
   name: "todos",
   initialState: {
@@ -23,20 +42,12 @@ export const todosSlice = createSlice({
     isLoading: false,
     error: null,
     activeFilter: "all",
-    addNewTodoIsLoading: false,
-    addNewTodoError: null,
+    addNewTodo: {
+      isLoading: false,
+      error: null,
+    },
   },
   reducers: {
-    toggle: (state, action) => {
-      const { id } = action.payload;
-      const item = state.items.find(item => item.id === id);
-      item.completed = !item.completed;
-    },
-    destroy: (state, action) => {
-      const id = action.payload;
-      const filtered = state.items.filter(item => item.id !== id);
-      state.items = filtered;
-    },
     changeActiveFilter: (state, action) => {
       state.activeFilter = action.payload;
     },
@@ -60,15 +71,27 @@ export const todosSlice = createSlice({
     },
     // Add TODO
     [addTodoAsync.pending]: (state, action) => {
-      state.addNewTodoIsLoading = true;
+      state.addNewTodo.isLoading = true;
     },
     [addTodoAsync.fulfilled]: (state, action) => {
       state.items.push(action.payload);
-      state.addNewTodoIsLoading = false;
+      state.addNewTodo.isLoading = false;
     },
     [addTodoAsync.rejected]: (state, action) => {
-      state.addNewTodoIsLoading = false;
-      state.addNewTodoError = action.error.message;
+      state.addNewTodo.isLoading = false;
+      state.addNewTodo.error = action.error.message;
+    },
+    // Toggle TODO
+    [toggleTodoAsync.fulfilled]: (state, action) => {
+      const { id, completed } = action.payload;
+      const item = state.items.find(item => item.id === id);
+      item.completed = completed;
+    },
+    // Remove TODO
+    [removeTodoAsync.fulfilled]: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter(item => item.id !== id);
+      state.items = filtered;
     },
   },
 });
@@ -84,6 +107,5 @@ export const selectFilteredTodos = state => {
   );
 };
 export const selectActiveFilter = state => state.todos.activeFilter;
-export const { changeActiveFilter, toggle, destroy, clearCompleted } =
-  todosSlice.actions;
+export const { changeActiveFilter, clearCompleted } = todosSlice.actions;
 export default todosSlice.reducer;

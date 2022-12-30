@@ -4,8 +4,8 @@ import Loading from "./Loading";
 import Error from "./Error";
 import {
   selectFilteredTodos,
-  destroy,
-  toggle,
+  removeTodoAsync,
+  toggleTodoAsync,
   getTodoAsync,
 } from "../features/todos/todosSlice";
 
@@ -18,9 +18,13 @@ const TodoList = () => {
     dispatch(getTodoAsync());
   }, [dispatch]);
 
-  const handleDestroy = id => {
+  const handleDestroy = async id => {
     window.confirm("Are you sure you want to delete this item?") &&
-      dispatch(destroy(id));
+      (await dispatch(removeTodoAsync(id)));
+  };
+
+  const handleToggle = async (id, completed) => {
+    await dispatch(toggleTodoAsync({ id, data: { completed } }));
   };
   if (isLoading) return <Loading />;
   if (error) return <Error message={error} />;
@@ -33,7 +37,7 @@ const TodoList = () => {
               type="checkbox"
               className="toggle"
               checked={item.completed}
-              onChange={() => dispatch(toggle({ id: item.id }))}
+              onChange={() => handleToggle(item.id, !item.completed)}
             />
             <label>{item.title}</label>
             <button

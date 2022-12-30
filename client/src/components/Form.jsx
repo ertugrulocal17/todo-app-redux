@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addTodoAsync } from "../features/todos/todosSlice";
+import { addTodoAsync } from "../features/todos/services";
 import Error from "./Error";
 import Loading from "./Loading";
 const Form = () => {
